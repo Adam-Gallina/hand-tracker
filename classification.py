@@ -92,6 +92,8 @@ class PoseClassifier:
                         )
                 })
 
+            print(f'Loaded {len(self.poses.keys())} poses')
+
     def AddPose(self, name, pose: Hand):
         self.poses.update({name: pose})
 
