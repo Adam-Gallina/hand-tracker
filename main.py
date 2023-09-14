@@ -1,10 +1,9 @@
 import cv2
 from tracker import HandTracker
-from classification import Hand, PoseClassifier, CalcHandAngle
+from classification import Hand, PoseClassifier
 from camera import CamController
 from math import degrees
 from debug import DrawHandVectors, DrawStationaryHandVectors, DrawHandAngle
-from vector import Vector3, V3toDegree
 
 
 POSE_FILE = 'TestScripts\\BasicASL.json'
@@ -37,8 +36,6 @@ def DebugOutput(lh:Hand, rh:Hand, image):
 
 tracker = HandTracker()
 poses = PoseClassifier(POSE_FILE)
-
-print(V3toDegree(poses.poses['One'].angle))
 
 cam = CamController(tracker)
 cam.StartCam(DebugOutput,

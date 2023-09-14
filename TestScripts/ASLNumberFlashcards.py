@@ -31,7 +31,7 @@ def Flashcards(lh:Hand, rh:Hand, image):
 
     currCol = (255, 0, 0)
     if rh is not None:
-        pose, strength = poses.ClassifyPose(rh)
+        pose, strength, ang = poses.ClassifyPose(rh, requireMatchingAngle=True)
 
         if pose != lastPose[0]:
             frameCount += 1
