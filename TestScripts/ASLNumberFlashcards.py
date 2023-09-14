@@ -14,9 +14,6 @@ flashcards = {1:'One', 2:'Two', 3:'Three', 4:'Four', 5:'Five',
               6:'Six', 7:'Seven', 8:'Eight', 9:'Nine', 10:'Ten'}
 
 
-def ShowHands(lh, rh, image):
-    cam.SetDebugImages(not cam.showDebugImages)
-
 def GetRandomCard():
     f = random.choice(list(flashcards.keys()))
     return f, flashcards[f]
@@ -56,8 +53,5 @@ tracker = HandTracker()
 poses = PoseClassifier(POSE_FILE)
 
 cam = CamController(tracker)
-cam.StartCam(Flashcards,
-             {
-                 ord('h'): ShowHands
-             })
+cam.StartCam(Flashcards)
 

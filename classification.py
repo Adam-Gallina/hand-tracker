@@ -1,42 +1,53 @@
 from vector import Vector3
 import json
 from os import path
+from math import atan2, pi, copysign
 
 HAND_LANDMARKS = 21
 FINGER_POINTS = 4
 FINGERS = [ 'thumb', 'index', 'middle', 'ring', 'pinky' ]
 
-def ProcessFinger(origin: Vector3, finger_coords: tuple[Vector3], invertHand=False):
+def ProcessFinger(origin: Vector3, finger_coords: tuple[Vector3], angle: Vector3, invertHand=False):
     finger = [(finger_coords[0] - origin).normalize()]
     for i in range(1, FINGER_POINTS):
-        dir = (finger_coords[i] - finger_coords[i - 1]).normalize()
-        finger.append(dir)
+        finger.append((finger_coords[i] - finger_coords[i - 1]).normalize())
 
-    if invertHand:
-        for i in finger:
-            i.x *= -1
+    for i in range(len(finger)):
+        if invertHand:
+            finger[i].x *= -1
+        finger[i] = finger[i].rotate(angle)
 
     return tuple(finger)
+
+# X axis parallel with thumb
+# Y axis parallel to ring finger
+# Z axis perpendicular to palm
+def CalcHandAngle(upV:Vector3, sideV:Vector3):
+    x = atan2(upV.z, upV.y)
+    y = atan2(sideV.z, sideV.x)
+    z = atan2(upV.x, upV.y)
+    return Vector3(copysign(pi - abs(x), x),
+                   y,
+                   copysign(pi - abs(z), z))
 
 
 class Hand:
     def __init__(self, palm, thumb, index, middle, ring, pinky, invertHand=False):
         self.palm = palm
-
         self.thumb_coord = thumb
-        self.thumb = ProcessFinger(palm, thumb, invertHand)
-
         self.index_coord = index
-        self.index = ProcessFinger(palm, index, invertHand)
-
         self.middle_coord = middle
-        self.middle = ProcessFinger(palm, middle, invertHand)
-
         self.ring_coord = ring
-        self.ring = ProcessFinger(palm, ring, invertHand)
-
         self.pinky_coord = pinky
-        self.pinky = ProcessFinger(palm, pinky, invertHand)
+
+        # angle is in radians
+        self.angle = CalcHandAngle(self.ring_coord[0] - self.palm, self.thumb_coord[0] - self.palm)
+
+        self.thumb = ProcessFinger(palm, thumb, -self.angle, invertHand)
+        self.index = ProcessFinger(palm, index, -self.angle, invertHand)
+        self.middle = ProcessFinger(palm, middle, -self.angle, invertHand)
+        self.ring = ProcessFinger(palm, ring, -self.angle, invertHand)
+        self.pinky = ProcessFinger(palm, pinky, -self.angle, invertHand)
 
     def get_finger(self, finger, coords=False):
         if finger == 'thumb':
@@ -66,10 +77,11 @@ class Hand:
         for name in FINGERS:
             f = self.get_finger(name)
             of = other.get_finger(name)
-            for i in range(len(f)):
+            for i in range(1, len(f)):
                 score += f[i].cos(of[i])
 
-        score /= HAND_LANDMARKS # [-1, 1]
+        # Not using first knuckles as those don't move
+        score /= HAND_LANDMARKS - 5 # [-1, 1]
         score = (score + 1) / 2 # [0, 1]
 
         return score ** 3
