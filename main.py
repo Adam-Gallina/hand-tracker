@@ -19,15 +19,14 @@ def ShowHands(lh, rh, image):
 
 def DebugOutput(lh:Hand, rh:Hand, image):
     #h, w, c = image.shape
-    #s = []
-    #if lh is not None:
-        #s.append('left')
-        #cv2.circle(image, lh.palm.to_img(w, h), 10, (255, 0, 0), cv2.FILLED)
+
+    s = []
+    if lh is not None:
+        pose, strength = poses.ClassifyPose(lh)
+        s.append((f'(L) {pose}: {round(strength, 3)}', ((pose is not None) * 255, 0, (pose is None) * 255)))
     if rh is not None:
-        #s.append('right')
-        s = []
         pose, strength = poses.ClassifyPose(rh)
-        s.append(f'{pose}: {round(strength, 3)}')
+        s.append((f'(R) {pose}: {round(strength, 3)}', ((pose is not None) * 255, 0, (pose is None) * 255)))
 
         #cv2.circle(image, rh.palm.to_img(w, h), 10, (0, 0, 255), cv2.FILLED)
         #cv2.arrowedLine(image,
@@ -39,9 +38,9 @@ def DebugOutput(lh:Hand, rh:Hand, image):
         #                    rh.thumb_coord[i].to_img(w, h),
         #                    (rh.thumb_coord[i] + rh.thumb[i+1] / 20).to_img(w, h),
         #                    (0, 0, 255), 3)
-        for i in range(len(s)):
-            y = 30 + i * 30
-            cv2.putText(image, s[i], (10, y), cv2.FONT_HERSHEY_PLAIN, 2, ((pose is not None) * 255, 0, (pose is None) * 255), 3)
+    for i in range(len(s)):
+        y = 30 + i * 30
+        cv2.putText(image, s[i][0], (10, y), cv2.FONT_HERSHEY_PLAIN, 2, s[i][1], 3)
 
 
 tracker = HandTracker()

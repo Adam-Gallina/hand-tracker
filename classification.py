@@ -6,32 +6,37 @@ HAND_LANDMARKS = 21
 FINGER_POINTS = 4
 FINGERS = [ 'thumb', 'index', 'middle', 'ring', 'pinky' ]
 
-def ProcessFinger(origin: Vector3, finger_coords: tuple[Vector3]):
+def ProcessFinger(origin: Vector3, finger_coords: tuple[Vector3], invertHand=False):
     finger = [(finger_coords[0] - origin).normalize()]
     for i in range(1, FINGER_POINTS):
-        finger.append((finger_coords[i] - finger_coords[i - 1]).normalize())
+        dir = (finger_coords[i] - finger_coords[i - 1]).normalize()
+        finger.append(dir)
+
+    if invertHand:
+        for i in finger:
+            i.x *= -1
 
     return tuple(finger)
 
 
 class Hand:
-    def __init__(self, palm, thumb, index, middle, ring, pinky):
+    def __init__(self, palm, thumb, index, middle, ring, pinky, invertHand=False):
         self.palm = palm
 
         self.thumb_coord = thumb
-        self.thumb = ProcessFinger(palm, thumb)
+        self.thumb = ProcessFinger(palm, thumb, invertHand)
 
         self.index_coord = index
-        self.index = ProcessFinger(palm, index)
+        self.index = ProcessFinger(palm, index, invertHand)
 
         self.middle_coord = middle
-        self.middle = ProcessFinger(palm, middle)
+        self.middle = ProcessFinger(palm, middle, invertHand)
 
         self.ring_coord = ring
-        self.ring = ProcessFinger(palm, ring)
+        self.ring = ProcessFinger(palm, ring, invertHand)
 
         self.pinky_coord = pinky
-        self.pinky = ProcessFinger(palm, pinky)
+        self.pinky = ProcessFinger(palm, pinky, invertHand)
 
     def get_finger(self, finger, coords=False):
         if finger == 'thumb':
