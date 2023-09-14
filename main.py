@@ -1,10 +1,10 @@
 import cv2
 from tracker import HandTracker
 from classification import Hand, PoseClassifier
-from camera import StartCam
+from camera import CamController
 
 
-POSE_FILE = 'PoseClassifications.json'
+POSE_FILE = 'TestScripts\\BasicASL.json'
 
 def CreatePose(lh, rh, image):
     n = input('Enter a pose name: ')
@@ -13,6 +13,8 @@ def CreatePose(lh, rh, image):
 def SavePoses(lh, rh, image):
     poses.SavePoses(POSE_FILE)
     print('Poses Saved')
+def ShowHands(lh, rh, image):
+    cam.SetDebugImages(not cam.showDebugImages)
 
 
 def DebugOutput(lh:Hand, rh:Hand, image):
@@ -42,13 +44,14 @@ def DebugOutput(lh:Hand, rh:Hand, image):
             cv2.putText(image, s[i], (10, y), cv2.FONT_HERSHEY_PLAIN, 2, ((pose is not None) * 255, 0, (pose is None) * 255), 3)
 
 
-tracker = HandTracker(True)
+tracker = HandTracker()
 poses = PoseClassifier(POSE_FILE)
 
-StartCam(tracker,
-         DebugOutput,
-         {
-            ord('n'): CreatePose,
-            ord('s'): SavePoses
-         })
+cam = CamController(tracker)
+cam.StartCam(DebugOutput,
+             {
+                 ord('n'): CreatePose,
+                 ord('s'): SavePoses,
+                 ord('h'): ShowHands
+             })
 

@@ -1,7 +1,7 @@
 import cv2
 from tracker import HandTracker
 from classification import Hand, PoseClassifier
-from camera import StartCam
+from camera import CamController
 import random
 import time
 
@@ -12,6 +12,10 @@ SECS_TO_CORRECT = .75
 
 flashcards = {1:'One', 2:'Two', 3:'Three', 4:'Four', 5:'Five',
               6:'Six', 7:'Seven', 8:'Eight', 9:'Nine', 10:'Ten'}
+
+
+def ShowHands(lh, rh, image):
+    cam.SetDebugImages(not cam.showDebugImages)
 
 def GetRandomCard():
     f = random.choice(list(flashcards.keys()))
@@ -45,14 +49,15 @@ def Flashcards(lh:Hand, rh:Hand, image):
                 currCard = GetRandomCard()
                 score += 1
 
-
-
     # Curr card
     cv2.putText(image, str(currCard[0]), (int(w / 2), h - 60), cv2.FONT_HERSHEY_PLAIN, 6, currCol, 6)
 
-tracker = HandTracker(False)
+tracker = HandTracker()
 poses = PoseClassifier(POSE_FILE)
 
-StartCam(tracker,
-         Flashcards)
+cam = CamController(tracker)
+cam.StartCam(Flashcards,
+             {
+                 ord('h'): ShowHands
+             })
 

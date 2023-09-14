@@ -6,10 +6,12 @@ from vector import Vector3
 def LtoV3(landmark):
     return Vector3(landmark.x, landmark.y, landmark.z)
 
-class HandTracker:
-    def __init__(self, generateDebugOutput=False):
-        self.generateDebugOutput = generateDebugOutput
+# Landmark to Vector3 mirroring the landmarks
+def LLtoV3(landmark):
+    return Vector3(-landmark.x, landmark.y, landmark.z)
 
+class HandTracker:
+    def __init__(self, ):
         self.mp_drawing = mp.solutions.drawing_utils
         self.mp_drawing_styles = mp.solutions.drawing_styles
         self.mp_hands = mp.solutions.hands
@@ -20,7 +22,7 @@ class HandTracker:
                     min_tracking_confidence=0.5)
 
     # Returns (LeftHand, RightHand, image)
-    def ProcessImg(self, image):
+    def ProcessImg(self, image, generateDebugOutput=False):
         results = self.hands.process(image)
 
         lh, rh = None, None
@@ -44,7 +46,7 @@ class HandTracker:
                               (LtoV3(hand_landmarks.landmark[13]), LtoV3(hand_landmarks.landmark[14]), LtoV3(hand_landmarks.landmark[15]), LtoV3(hand_landmarks.landmark[16])),
                               (LtoV3(hand_landmarks.landmark[17]), LtoV3(hand_landmarks.landmark[18]), LtoV3(hand_landmarks.landmark[19]), LtoV3(hand_landmarks.landmark[20])))
 
-                if self.generateDebugOutput:
+                if generateDebugOutput:
                     self.mp_drawing.draw_landmarks(image,
                                                    hand_landmarks,
                                                    self.mp_hands.HAND_CONNECTIONS,

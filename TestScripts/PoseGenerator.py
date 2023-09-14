@@ -1,6 +1,6 @@
 from tracker import HandTracker
 from classification import PoseClassifier
-from camera import StartCam
+from camera import CamController
 
 
 POSE_FILE = 'NewPoseClassifications'
@@ -13,6 +13,8 @@ def CreatePose(lh, rh, image):
     poses.AddPose(n, rh)
     poses.SavePoses(fname)
     print('Pose saved')
+def ShowHands(lh, rh, image):
+    cam.SetDebugImages(not cam.showDebugImages)
 
 
 print(f'Enter a filename (blank for {POSE_FILE}.json)')
@@ -28,9 +30,10 @@ poses = PoseClassifier(fname)
 print('Starting Hand Tracker')
 print('Press N to create a new pose')
 
-StartCam(tracker,
-         None,
-         {
-            ord('n'): CreatePose
-         })
+cam = CamController(tracker)
+cam.StartCam(None,
+             {
+                 ord('n'): CreatePose,
+                 ord('h'): ShowHands
+             })
 
