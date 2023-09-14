@@ -22,21 +22,13 @@ def DebugOutput(lh:Hand, rh:Hand, image):
     h, w, c = image.shape
     s = []
     if lh is not None:
-        #pose, strength = poses.ClassifyPose(lh)
-        #s.append((f'(L) {pose}: {round(strength, 3)}', ((pose is not None) * 255, 0, (pose is None) * 255)))
-        #s.append(f'(L) ({round(degrees(lh.angle.x), 1)}, {round(degrees(lh.angle.y), 1)}, {round(degrees(lh.angle.z), 1)}')
-        DrawHandVectors(image, lh)
+        pose, strength, angle = poses.ClassifyPose(lh)
+        s.append(f'(L) {pose}: {round(strength, 3)}, {round(angle, 3)}')
+        s.append(f'(L) ({round(degrees(lh.angle.x), 1)}, {round(degrees(lh.angle.y), 1)}, {round(degrees(lh.angle.z), 1)}')
     if rh is not None:
-        pose, strength = poses.ClassifyPose(rh)
-        s.append(f'(R) {pose}: {round(strength, 3)}')
+        pose, strength, angle = poses.ClassifyPose(rh)
+        s.append(f'(R) {pose}: {round(strength, 3)}, {round(angle, 3)}')
         s.append(f'(R) ({round(degrees(rh.angle.x), 1)}, {round(degrees(rh.angle.y), 1)}, {round(degrees(rh.angle.z), 1)}')
-        #DrawHandVectors(image, rh, color=(255, 0, 0))
-        DrawStationaryHandVectors(image, (100, h-130), rh)
-        DrawHandAngle(image, rh.palm.to_img(w, h), rh.angle)
-
-        a = CalcHandAngle(rh.ring[0], rh.thumb[0])
-        s.append(f'(H) ({round(degrees(a.x), 1)}, {round(degrees(a.y), 1)}, {round(degrees(a.z), 1)}')
-        DrawHandAngle(image, (100, h-130), a)
 
     for i in range(len(s)):
         y = 30 + i * 30

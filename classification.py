@@ -72,8 +72,11 @@ class Hand:
         }
 
     # Score similarity based on the COS of the angle between vectors
+    # Returns:
+    #   Similarity between hand angles
+    #   Similarity between finger angles
     def Compare(self, other):
-        score = self.palm.cos(other.palm)
+        score = other.palm.cos(other.palm)
         for name in FINGERS:
             f = self.get_finger(name)
             of = other.get_finger(name)
@@ -84,7 +87,7 @@ class Hand:
         score /= HAND_LANDMARKS - 5 # [-1, 1]
         score = (score + 1) / 2 # [0, 1]
 
-        return score ** 3
+        return ((self.angle.cos(other.angle) + 1) / 2) ** 3, score ** 3
 
 # Array to Vector3
 def AtoV3(arr):
@@ -122,17 +125,24 @@ class PoseClassifier:
         with open(filename, 'w') as f:
             json.dump(jsonData, f, indent=2)
 
-    def ClassifyPose(self, hand, threshold=0.5):
-        s = 0
+    # Returns:
+    #   Name of best matched pose
+    #   Similarity score of fingers
+    #   Similarity score of hand angle
+    def ClassifyPose(self, hand, requireMatchingAngle=False, threshold=0.5):
+        a = f = 0
         pose = None
 
         for k in self.poses.keys():
-            v = self.poses[k].Compare(hand)
-            if v > s:
-                s = v
+            angle, fingers = self.poses[k].Compare(hand)
+            if requireMatchingAngle and angle < threshold:
+                continue
+            if fingers > f:
+                a = angle
+                f = fingers
                 pose = k
 
-        if s <= threshold:
-            return None, (threshold - s) / threshold
+        if f <= threshold:
+            return None, (threshold - f) / threshold, 0
 
-        return pose, s
+        return pose, f, a
