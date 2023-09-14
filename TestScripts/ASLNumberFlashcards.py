@@ -1,6 +1,6 @@
 import cv2
 from tracker import HandTracker
-from classification import Hand, PoseClassifier
+from classification import HandMovement, PoseClassifier
 from camera import CamController
 import random
 import time
@@ -22,7 +22,7 @@ currCard = GetRandomCard()
 score = 0
 lastPose = (None, 0)
 frameCount = 0
-def Flashcards(lh:Hand, rh:Hand, image):
+def Flashcards(lhm:HandMovement, rhm:HandMovement, image):
     global lastPose, frameCount, score, currCard
     h, w, c = image.shape
 
@@ -30,8 +30,8 @@ def Flashcards(lh:Hand, rh:Hand, image):
     cv2.putText(image, str(score), (10, 40), cv2.FONT_HERSHEY_PLAIN, 2, (0, 255, 0), 3)
 
     currCol = (255, 0, 0)
-    if rh is not None:
-        pose, strength, ang = poses.ClassifyPose(rh, requireMatchingAngle=True)
+    if rhm.hand is not None:
+        pose, strength, ang = poses.ClassifyPose(rhm.hand, requireMatchingAngle=True)
 
         if pose != lastPose[0]:
             frameCount += 1

@@ -30,7 +30,6 @@ def CalcHandAngle(upV:Vector3, sideV:Vector3):
                    y,
                    copysign(pi - abs(z), z))
 
-
 class Hand:
     def __init__(self, palm, thumb, index, middle, ring, pinky, invertHand=False):
         self.palm = palm
@@ -88,6 +87,24 @@ class Hand:
         score = (score + 1) / 2 # [0, 1]
 
         return ((self.angle.cos(other.angle) + 1) / 2) ** 3, score ** 3
+
+
+class HandMovement:
+    def __init__(self):
+        self.hand = None
+        self.lastPos:Vector3 = None
+        self.velocity = Vector3()
+
+    def UpdateHand(self, hand: Hand, dt):
+        self.lastPos = self.hand.palm if self.hand is not None else self.lastPos = None
+        self.hand = hand
+
+        if self.lastPos is not None:
+            self.velocity = (self.lastPos - self.hand.palm) / dt
+
+    def ClearHand(self):
+        self.lastPos = self.hand.palm if self.hand is not None else self.lastPos = None
+        self.hand = None
 
 # Array to Vector3
 def AtoV3(arr):

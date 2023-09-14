@@ -18,7 +18,7 @@ class HandTracker:
                     min_tracking_confidence=0.5)
 
     # Returns (LeftHand, RightHand, image)
-    def ProcessImg(self, image, generateDebugOutput=False):
+    def ProcessImg(self, image, flipLeftHand=True, generateDebugOutput=False):
         results = self.hands.process(image)
 
         lh, rh = None, None
@@ -41,7 +41,7 @@ class HandTracker:
                               (LtoV3(hand_landmarks.landmark[9]), LtoV3(hand_landmarks.landmark[10]), LtoV3(hand_landmarks.landmark[11]), LtoV3(hand_landmarks.landmark[12])),
                               (LtoV3(hand_landmarks.landmark[13]), LtoV3(hand_landmarks.landmark[14]), LtoV3(hand_landmarks.landmark[15]), LtoV3(hand_landmarks.landmark[16])),
                               (LtoV3(hand_landmarks.landmark[17]), LtoV3(hand_landmarks.landmark[18]), LtoV3(hand_landmarks.landmark[19]), LtoV3(hand_landmarks.landmark[20])),
-                              True)
+                              flipLeftHand)
 
                 if generateDebugOutput:
                     self.mp_drawing.draw_landmarks(image,

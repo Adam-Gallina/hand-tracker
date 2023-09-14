@@ -1,16 +1,16 @@
 from tracker import HandTracker
-from classification import PoseClassifier
+from classification import PoseClassifier, HandMovement
 from camera import CamController
 
 
 POSE_FILE = 'NewPoseClassifications'
 
-def CreatePose(lh, rh, image):
+def CreatePose(lhm:HandMovement, rhm:HandMovement, image):
     print('Enter a pose name (Leave blank to cancel)')
     n = input('> ')
     if len(n) == 0:
         return
-    poses.AddPose(n, rh)
+    poses.AddPose(n, rhm.hand)
     poses.SavePoses(fname)
     print('Pose saved')
 
