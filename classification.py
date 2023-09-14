@@ -96,14 +96,14 @@ class HandMovement:
         self.velocity = Vector3()
 
     def UpdateHand(self, hand: Hand, dt):
-        self.lastPos = self.hand.palm if self.hand is not None else self.lastPos = None
+        self.lastPos = (self.hand.palm if self.hand is not None else None)
         self.hand = hand
 
         if self.lastPos is not None:
             self.velocity = (self.lastPos - self.hand.palm) / dt
 
     def ClearHand(self):
-        self.lastPos = self.hand.palm if self.hand is not None else self.lastPos = None
+        self.lastPos = (self.hand.palm if self.hand is not None else None)
         self.hand = None
 
 # Array to Vector3
@@ -130,6 +130,8 @@ class PoseClassifier:
                 })
 
             print(f'Loaded {len(self.poses.keys())} poses')
+        else:
+            print(f'Could not find {filename}')
 
     def AddPose(self, name, pose: Hand):
         self.poses.update({name: pose})
@@ -160,6 +162,6 @@ class PoseClassifier:
                 pose = k
 
         if f <= threshold:
-            return None, (threshold - f) / threshold, 0
+            return None, (threshold - f) / threshold, 1
 
         return pose, f, a

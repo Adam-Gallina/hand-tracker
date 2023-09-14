@@ -49,7 +49,7 @@ class Vector3:
 
         return self.dot(other) / (self.magnitude() * other.magnitude())
 
-    def to_img(self, w, h, scale=1):
+    def to_img(self, w=1, h=1, scale=1):
         return (int(self.x * w * scale), int(self.y * h * scale))
 
     def ToJson(self):
