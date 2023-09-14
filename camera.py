@@ -1,12 +1,14 @@
 import cv2
+
 from tracker import HandTracker
 
 
 class CamController:
-    def __init__(self, tracker: HandTracker, showDebugImages=False):
+    def __init__(self, tracker: HandTracker, showDebugImages=False, enableDefaultCommands=True):
         self.cap = cv2.VideoCapture(0)
         self.tracker = tracker
         self.showDebugImages = showDebugImages
+        self.enableDefaultCommands = enableDefaultCommands
 
     def StartCam(self, callback=None, commands:dict=None):
         while self.cap.isOpened():
@@ -31,6 +33,8 @@ class CamController:
                 break
             elif k == -1: # No key pressed
                 continue
+            elif self.enableDefaultCommands and k == ord('h'):
+                self.SetDebugImages(not self.showDebugImages)
             elif commands is not None and k in commands.keys():
                 commands[k](lh, rh, image)
 
